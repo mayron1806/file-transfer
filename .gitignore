@@ -1,0 +1,12 @@
+*/bin/
+*/obj/
+
+
+*/tmp
+*/temp
+*/node_modules
+*/build
+*/dist
+
+/.vscode 
+*/.vscode 

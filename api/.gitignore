@@ -1,0 +1,10 @@
+*/bin/
+*/obj/
+
+/.vscode
+
+*.db*
+*.http
+
+*/appsettings.Local.json
+*/appsettings.Development.json
