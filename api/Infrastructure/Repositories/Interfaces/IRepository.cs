@@ -8,11 +8,12 @@ public interface IRepository<T, K> where T : class
     void Update(T objModel);
     void Delete(K id);
     void Delete(T objModel);
-    Task<T?> GetByIdAsync(K id);
+    Task<T?> GetByIdAsync(K id, string? includeProperties = null, bool asNoTracking = true);
     Task<T?> GetFirstAsync(Expression<Func<T, bool>>? filter = null, string? includeProperties = null, bool asNoTracking = true);
     Task<List<T>> GetListAsync(
         Expression<Func<T, bool>>? filter = null,
         Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null,
-        Func<IQueryable<T>, IQueryable<T>>? include = null,
-        string? includeProperties = null);
+        string? includeProperties = null,
+        int? limit = null,
+        int? offset = null);
 }

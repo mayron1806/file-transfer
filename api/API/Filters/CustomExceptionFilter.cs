@@ -4,9 +4,9 @@ using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace API.Filters;
 
-public class HttpExceptionFilter(ILogger<HttpExceptionFilter> logger) : IExceptionFilter
+public class CustomExceptionFilter(ILogger<CustomExceptionFilter> logger) : IExceptionFilter
 {
-    private readonly ILogger<HttpExceptionFilter> _logger = logger;
+    private readonly ILogger<CustomExceptionFilter> _logger = logger;
 
     public void OnException(ExceptionContext context)
     {

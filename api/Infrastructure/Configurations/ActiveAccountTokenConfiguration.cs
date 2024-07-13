@@ -9,6 +9,7 @@ public class ActiveAccountTokenConfiguration : IEntityTypeConfiguration<ActiveAc
     public void Configure(EntityTypeBuilder<ActiveAccountToken> builder)
     {
         builder.HasKey(x => x.Id);
+        builder.Property(x => x.Id).ValueGeneratedOnAdd();
         
         builder.Property(x => x.Content).IsRequired().HasMaxLength(100);
         

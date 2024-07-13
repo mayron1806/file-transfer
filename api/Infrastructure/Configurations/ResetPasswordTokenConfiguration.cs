@@ -9,7 +9,7 @@ public class ResetPasswordTokenConfiguration : IEntityTypeConfiguration<ResetPas
     public void Configure(EntityTypeBuilder<ResetPasswordToken> builder)
     {
         builder.HasKey(x => x.Id);
-        
+                builder.Property(x => x.Id).ValueGeneratedOnAdd();
         builder.Property(x => x.Content).IsRequired().HasMaxLength(100);
         
         builder

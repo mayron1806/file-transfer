@@ -31,6 +31,7 @@ public class User
     public string Password { get; private set; }
     public ActiveAccountToken? ActiveAccountToken { get; private set; }
     public ResetPasswordToken? ResetPasswordToken { get; private set; }
+    public IEnumerable<Member>? Members { get; set; }
     public DateTime CreatedAt { get; } = DateTime.UtcNow;
     public DateTime UpdatedAt { get; private set; } = DateTime.UtcNow;
     public bool EmailVerified { get; private set; } = false;

@@ -1,9 +1,11 @@
-﻿using Amazon.Runtime;
+﻿using Amazon;
+using Amazon.Runtime;
 using Amazon.S3;
 using Amazon.S3.Model;
-using FileTransfer.Shared.Settings;
+using Infrastructure.Settings;
+using Newtonsoft.Json;
 
-namespace FileTransfer.Infrastructure.Services.Storage;
+namespace Infrastructure.Services.Storage;
 
 public class StorageService : IStorageService
 {
@@ -12,18 +14,56 @@ public class StorageService : IStorageService
     public StorageService(AWSSettings settings)
     {
         var credentials = new BasicAWSCredentials(settings.AccessKey, settings.SecretKey);
-        _s3Client = new AmazonS3Client(credentials, new AmazonS3Config{
-            ServiceURL = settings.Endpoint,
-        });
+        _s3Client = new AmazonS3Client(credentials, new AmazonS3Config{ ServiceURL = settings.Endpoint });
+        AWSConfigsS3.UseSignatureVersion4 = true;
     }
 
-    public Task<string> GetSignedURLAsync(string fileName, string contentType)
+    public async Task<bool> DeleteObjectAsync(string bucket, string key)
+    {
+        var request = new DeleteObjectRequest
+        {
+            BucketName = bucket,
+            Key = key
+        };
+        await _s3Client.DeleteObjectAsync(request);
+        return true;
+    }
+        public async Task<bool> DeleteFolderAsync(string bucket, string key)
+    {
+        var request = new ListObjectsV2Request
+        {
+            BucketName = bucket,
+            Prefix = key,
+        };
+        var files = await _s3Client.ListObjectsV2Async(request);
+        var delete = new DeleteObjectsRequest 
+        {
+            BucketName = bucket,
+            Objects = files.S3Objects.Select(x => new KeyVersion{Key = x.Key}).ToList()
+        };
+        await _s3Client.DeleteObjectsAsync(delete);
+        return true;
+    }
+
+    public async Task<ObjectInfo> GetObjectInfoAsync(string bucket, string key)
+    {
+        var request = new GetObjectMetadataRequest
+        {
+            BucketName = bucket,
+            Key = key,    
+        };
+        var res = await _s3Client.GetObjectMetadataAsync(request);
+        var obj = new ObjectInfo(res.Headers.ContentType, res.ContentLength, res.ETag, res.LastModified, key, bucket);
+        return obj;
+    }
+
+    public Task<string> GetObjectSignedURLAsync(string bucket, string key)
     {
         var request = new GetPreSignedUrlRequest
         {
-            BucketName = fileName,
-            ContentType = contentType,
-            PartNumber = 2,
+            BucketName = bucket,
+            Key = key,
+            Expires = DateTime.UtcNow.AddMinutes(5),
         };
         return Task.FromResult(_s3Client.GetPreSignedURL(request));
     }
@@ -31,5 +71,18 @@ public class StorageService : IStorageService
     public async Task<IEnumerator<string>> ListBucketsAsync() {
         var response = await _s3Client.ListBucketsAsync();
         return response.Buckets.Select(x => x.BucketName).GetEnumerator();
+    }
+
+    public Task<string> PutObjectSignedURLAsync(string bucket, string key, string contentType)
+    {
+        var request = new GetPreSignedUrlRequest
+        {
+            BucketName = bucket,
+            Key = key,
+            ContentType = contentType,
+            Verb = HttpVerb.PUT,
+            Expires = DateTime.UtcNow.AddMinutes(1),
+        };
+        return Task.FromResult(_s3Client.GetPreSignedURL(request));
     }
 }
