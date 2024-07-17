@@ -1,8 +1,11 @@
-﻿using Application.UseCases.ActiveAccount;
+﻿using API.Dto;
+using Application.Exceptions;
+using Application.UseCases.ActiveAccount;
 using Application.UseCases.CreateAccount;
 using Application.UseCases.ForgetPassword;
 using Application.UseCases.Login;
 using Application.UseCases.ResetPassword;
+using Infrastructure.Services.JWT;
 using Infrastructure.UnitOfWork;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -18,8 +21,10 @@ public class UserController(
     IActiveAccountUseCase activeAccountUseCase,
     IForgetPasswordUseCase forgetPasswordUseCase,
     IResetPasswordUseCase resetPasswordUseCase,
+    JWTService jwt,
     ILoginUseCase loginUseCase) : BaseController(logger)
 {
+    private readonly JWTService _jwt = jwt;
     private readonly IActiveAccountUseCase _activeAccountUseCase = activeAccountUseCase;
     private readonly IForgetPasswordUseCase _forgetPasswordUseCase = forgetPasswordUseCase;
     private readonly IResetPasswordUseCase _resetPasswordUseCase = resetPasswordUseCase;
@@ -51,5 +56,16 @@ public class UserController(
 
     [HttpPost("reset-password")]
     public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordInputDto body) => Ok(await _resetPasswordUseCase.Execute(body));
-
+    [HttpPost("refresh-token")]
+    public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenBody body)
+    {
+        if(body.RefreshToken == null) throw new HttpException(400, "Token invalido");
+        var content = _jwt.DecodeToken(body.RefreshToken);
+        if(content == null) throw new HttpException(400, "Token invalido");
+        var userId = int.Parse(content);
+        var user = await _unitOfWork.User.GetByIdAsync(userId);
+        if(user == null) throw new HttpException(400, "Token invalido");
+        var token = _jwt.GenerateToken(userId, user.Email);
+        return Ok(token);
+    }
 }

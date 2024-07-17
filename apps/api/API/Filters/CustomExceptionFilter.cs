@@ -12,8 +12,8 @@ public class CustomExceptionFilter(ILogger<CustomExceptionFilter> logger) : IExc
     {
         context.Result = context.Exception switch
         {
-            HttpException httpException => new ObjectResult(new { message = httpException.Message }) { StatusCode = (int)httpException.StatusCode },
-            _ => new ObjectResult(new { message = "Ocorreu um erro inesperado" }) { StatusCode = 500 },
+            HttpException httpException => new ObjectResult(new { error = httpException.Message }) { StatusCode = (int)httpException.StatusCode },
+            _ => new ObjectResult(new { error = "Ocorreu um erro inesperado" }) { StatusCode = 500 },
         };
         _logger.LogError(context.Exception, context.Exception.Message);
     }

@@ -26,6 +26,7 @@ public class LoginUseCase(
     public override async Task<LoginOutputDto> Execute(LoginInputDto input)
     {
         // erro padrao
+        _logger.LogInformation("Login");
         var error = new HttpException(400, "Usuário e/ou senha incorreto(s)");
         // pega usuario com email
         var user = await _unitOfWork.User.GetFirstAsync(x => x.Email == input.Email, "ActiveAccountToken");

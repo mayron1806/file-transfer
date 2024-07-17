@@ -38,7 +38,7 @@ public class User
 
     public void VerifyEmail() {
         EmailVerified = true;
-        ActiveAccountToken = null;
+        // ActiveAccountToken = null;
         UpdatedAt = DateTime.UtcNow;
     }
     public void UpdatePassword(string password) {

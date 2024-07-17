@@ -3,6 +3,7 @@ using System.IdentityModel.Tokens.Jwt;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
 using Infrastructure.Settings;
+using Newtonsoft.Json;
 
 namespace Infrastructure.Services.JWT;
 public class JWTToken(string accessToken, string refreshToken, DateTime expires) {
@@ -20,6 +21,13 @@ public class JWTService(JWTSettings jwtSettings)
             GenerateRefreshToken(userId, email), 
             DateTime.UtcNow.AddMinutes(_jwtSettings.ExpiresInMinutes)
         );
+    }
+    public string DecodeToken(string token)
+    {
+        var handler = new JwtSecurityTokenHandler();
+        var jsonToken = handler.ReadJwtToken(token);
+        Console.WriteLine(JsonConvert.SerializeObject(jsonToken.Claims, Formatting.Indented));
+        return jsonToken.Claims.First(claim => claim.Type == "unique_name").Value;
     }
     public string GenerateCustomToken(string content, int? durationInMinutes = null, string? audience = null)
     {

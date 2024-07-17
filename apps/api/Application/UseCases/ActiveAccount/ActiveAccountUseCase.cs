@@ -44,7 +44,7 @@ namespace Application.UseCases.ActiveAccount
             user.VerifyEmail();
             
             _unitOfWork.User.Update(user);
-            _unitOfWork.ActiveAccountToken.Delete(token);
+            // _unitOfWork.ActiveAccountToken.Delete(token);
             
             await _unitOfWork.SaveChangesAsync();
             var jwt = _jwt.GenerateToken(user.Id, user.Email);

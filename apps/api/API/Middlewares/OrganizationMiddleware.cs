@@ -11,8 +11,9 @@ public class OrganizationMiddleware(RequestDelegate next)
     private readonly RequestDelegate _next = next;
     public async Task InvokeAsync(HttpContext context)
     {
-        var allowAnonymous = context.GetEndpoint()!.Metadata.Any(x => x.GetType() == typeof(AllowAnonymousAttribute));
-        if (allowAnonymous) {
+        var allowAnonymous = context.GetEndpoint()?.Metadata.Any(x => x.GetType() == typeof(AllowAnonymousAttribute));
+        if (allowAnonymous != null && allowAnonymous.Value) {
+            Console.WriteLine("[ORGANIZATION MIDDLEWARE - ALLOW ANONYMOUS]");
             await _next(context);
             return;
         }
@@ -56,8 +57,9 @@ public class OrganizationMiddleware(RequestDelegate next)
                 await WriteForbiddenResponse(context, "Usuário não tem autorizacão para essa organização");
                 return;
             }
+            context.Items["organizationId"] = organizationIdRoute;
         }
-        context.Items["organizationId"] = organizationIdRoute;
+        Console.WriteLine("[ORGANIZATION MIDDLEWARE - NEXT]");
         await _next(context);
     }
     private static async Task WriteForbiddenResponse(HttpContext context, string message)
