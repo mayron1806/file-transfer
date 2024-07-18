@@ -57,6 +57,7 @@ export default async function middleware(req: NextRequest) {
 // seleciona as rotas privadas
 export const config = {
   matcher: [
+    "/",
     "/((?!auth|api/auth).*)", // todas as rotas, exceto as que iniciam com /auth ou /api/auth
   ],
 };

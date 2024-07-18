@@ -1,11 +1,12 @@
 'use client';
 import { Player } from '@lottiefiles/react-lottie-player';
-import animation from './animation.json'
+import animation from './animation.json';
 import { LottieElementsProps } from '../types';
-const LottieError = (props: LottieElementsProps) => {
+
+const LottieNotFound = (props: LottieElementsProps) => {
   return ( 
     <Player src={animation} {...props} />
   );
 }
- 
-export default LottieError;
+
+export default LottieNotFound;

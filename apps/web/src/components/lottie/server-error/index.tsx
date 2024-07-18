@@ -2,10 +2,10 @@
 import { Player } from '@lottiefiles/react-lottie-player';
 import animation from './animation.json'
 import { LottieElementsProps } from '../types';
-const LottieError = (props: LottieElementsProps) => {
+const LottieServerError = (props: LottieElementsProps) => {
   return ( 
     <Player src={animation} {...props} />
   );
 }
  
-export default LottieError;
+export default LottieServerError;

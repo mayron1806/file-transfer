@@ -38,10 +38,10 @@ public class UserController(
     {
         var userId = GetUserId();
         var user = await _unitOfWork.User.GetByIdAsync(userId);
-        return Ok(user);
+        if (user == null) throw new HttpException(404, "Usuario não encontrado");
+        return Ok(GetMeDto.Map(user));
     }
     
-
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginInputDto body) => Ok(await _loginUseCase.Execute(body));
 

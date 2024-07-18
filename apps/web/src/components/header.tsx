@@ -1,13 +1,14 @@
-import { DownloadCloud, Menu, Package2, Search, UploadCloud } from "lucide-react";
+import { DownloadCloud, Menu, Package2, UploadCloud } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import UserInfo from "./user-info";
 import { ModeToggle } from "./mode-toogle";
 import Link from "next/link";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
-
-const Header = () => {
+type Props = {
+  organizationId: number;
+}
+const Header = ({ organizationId }: Props) => {
   return (
     <header className="flex h-14 items-center gap-4 border-b bg-muted/40 px-4 lg:h-[60px] lg:px-6">
       <Sheet>
@@ -20,21 +21,21 @@ const Header = () => {
         <SheetContent side="left" className="flex flex-col">
         <nav className="grid gap-2 text-lg font-medium">
           <Link
-            href="#"
+            href={`/dashboard/${organizationId}`}
             className="flex items-center gap-2 text-lg font-semibold"
           >
             <Package2 className="h-6 w-6" />
             <span className="sr-only">Acme Inc</span>
           </Link>
           <Link
-            href="#"
+            href={`/dashboard/${organizationId}/send-files`}
             className="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground"
           >
             <UploadCloud className="h-5 w-5" />
             Enviar arquivos
           </Link>
           <Link
-            href="#"
+            href={`/dashboard/${organizationId}/receive-files`}
             className="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground"
           >
             <DownloadCloud className="h-5 w-5" />

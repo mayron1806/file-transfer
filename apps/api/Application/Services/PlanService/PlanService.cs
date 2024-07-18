@@ -13,7 +13,7 @@ public enum PlanName {
 }
 public class PlanService(IUnitOfWork unitOfWork): IPlanService
 {
-    private readonly List<Plan> plans = [Plans.Free, Plans.Starter, Plans.Pro, Plans.ProMax];
+    public static readonly List<Plan> Plans = [Domain.Plan.Plans.Free, Domain.Plan.Plans.Starter, Domain.Plan.Plans.Pro, Domain.Plan.Plans.ProMax];
     private readonly IUnitOfWork _unitOfWork = unitOfWork;
 
     public async Task<Plan> GetPlanByOrganizationIdAsync(int organizationId)
@@ -22,24 +22,24 @@ public class PlanService(IUnitOfWork unitOfWork): IPlanService
         if (org == null) throw new HttpException(400, "Organizacao nao encontrada");
         return GetPlanByOrganization(org);
     }
-    public Plan GetPlanByOrganization(Organization org) => plans.Find(x => x.Name == org.Plan) ?? Plans.Free;
+    public Plan GetPlanByOrganization(Organization org) => Plans.Find(x => x.Name == org.Plan) ?? Domain.Plan.Plans.Free;
     public Plan GetPlan(PlanName plan) {
         return plan switch
         {
-            PlanName.Free => Plans.Free,
-            PlanName.Starter => Plans.Starter,
-            PlanName.Pro => Plans.Pro,
-            PlanName.ProMax => Plans.ProMax,
+            PlanName.Free => Domain.Plan.Plans.Free,
+            PlanName.Starter => Domain.Plan.Plans.Starter,
+            PlanName.Pro => Domain.Plan.Plans.Pro,
+            PlanName.ProMax => Domain.Plan.Plans.ProMax,
             _ => throw new HttpException(400, "Plano invalido"),
         };
     }
     public Plan GetPlan(string plan) {
         return plan switch
         {
-            "Free" => Plans.Free,
-            "Starter" => Plans.Starter,
-            "Pro" => Plans.Pro,
-            "ProMax" => Plans.ProMax,
+            "Free" => Domain.Plan.Plans.Free,
+            "Starter" => Domain.Plan.Plans.Starter,
+            "Pro" => Domain.Plan.Plans.Pro,
+            "ProMax" => Domain.Plan.Plans.ProMax,
             _ => throw new HttpException(400, "Plano invalido"),
         };
     }

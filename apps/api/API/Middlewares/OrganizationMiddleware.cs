@@ -66,7 +66,7 @@ public class OrganizationMiddleware(RequestDelegate next)
     {
         context.Response.StatusCode = StatusCodes.Status403Forbidden;
         context.Response.ContentType = "application/json";
-        var response = new { Message = message };
+        var response = new { error = message };
         await context.Response.WriteAsync(System.Text.Json.JsonSerializer.Serialize(response));
     }
 }

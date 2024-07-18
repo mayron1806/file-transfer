@@ -20,8 +20,6 @@ const Login = () => {
   });
   const submit = handleSubmit(async (body) => {
     try {
-      console.log(body);
-      
       const res = await fetch('/api/auth/login', {
         method: 'POST',
         headers: {
@@ -30,8 +28,6 @@ const Login = () => {
         body: JSON.stringify(body)
       });
       const data = await res.json();
-      console.log(data);
-      
       if (!res?.ok) {
         setError('root', { message: data.error ?? 'Ocorreu um erro ao fazer login' });
         toast({
@@ -41,9 +37,10 @@ const Login = () => {
         });
         return;
       }
-      console.log(data);
+      const { destination } = data as { destination: string };
+      console.log(destination);
       
-      return router.push('/');
+      return router.push(data.destination);
     } catch (error) {
       if(error instanceof Error) {
         setError('root', { message: error.message });

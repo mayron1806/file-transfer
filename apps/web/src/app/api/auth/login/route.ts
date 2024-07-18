@@ -5,7 +5,6 @@ import { NextResponse } from "next/server";
 
 export const POST = async (req: Request) => {
   const { email, password } = await req.json();
-  console.log('here');
   
   const res = await fetch(`${process.env.API_URL}/user/login`, {
     headers: {
@@ -15,8 +14,6 @@ export const POST = async (req: Request) => {
     body: JSON.stringify({ email, password }),
   });
   const data = await res.json();
-  console.log(data);
-  
   if (!res.ok) {
     return new Response(JSON.stringify(data), { status: 401 });
   }
@@ -38,5 +35,28 @@ export const POST = async (req: Request) => {
     sameSite: 'lax',
     path: '/',
   });
-  return NextResponse.json(data);
+  console.log('here login');
+  
+  let organization;
+  const orgRes = await fetch(`${process.env.API_URL}/organization`, {
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${accessToken}`,
+    },
+    method: "GET",
+  });
+  if (res.ok) organization = await orgRes.json();
+  else if (orgRes?.status === 404) {
+    const newOrganization = await fetch(`${process.env.API_URL}/organization`, {
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${accessToken}`,
+      },
+      method: "POST",
+    });
+    const data = await newOrganization.json();
+    if (!newOrganization.ok) return new Response(JSON.stringify(data), { status: newOrganization.status });
+    organization = data;
+  }
+  return NextResponse.json({ destination: `/dashboard/${organization.id}` });
 }
