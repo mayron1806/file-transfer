@@ -1,47 +1,53 @@
-import { useState } from 'react';
+'use client';
+import { forwardRef, useState, InputHTMLAttributes, useEffect } from 'react';
+import { Folder, FolderOpen } from 'lucide-react';
 
 type Props = {
-  onChangeFile?: (file?: File) => void;
-  file?: File | null;
-}
-export default function InputFile({ onChangeFile, file }: Props) {
-  const [state, setState] = useState<'empty' | 'dragging' | 'filled'>('empty'); 
-  const handleChangeFiles = async (files: FileList) => {
-    onChangeFile?.(files?.[0]);
-  }
+  files?: FileList;
+  allowedExtensions?: string[];
+} & InputHTMLAttributes<HTMLInputElement>;
+
+const InputFile = forwardRef<HTMLInputElement, Props>(({ files, allowedExtensions, multiple, ...props }, ref) => {
+  const [state, setState] = useState<'empty' | 'dragging' | 'filled'>('empty');
+  
+  const fileNamesToDisplay = Object.values(files ?? []).slice(0, 3).map(file => file.name);
+  const additionalFileCount = (files?.length ?? 0) - 3;
+  
+  useEffect(() => {
+    if ((files?.length ?? 0) > 0) setState('filled');
+    else setState('empty');
+  }, [files]);
+
   return (
-    <label 
+    <label
       htmlFor="file"
-      className='w-full h-20 flex items-center justify-center border-2 rounded-lg border-dashed'
+      className='w-full min-h-40 flex flex-col items-center justify-center gap-4 border-2 rounded-lg border-dashed overflow-hidden relative'
     >
       { state === 'empty' && <p>Selecione os arquivos</p> }
       { state === 'dragging' && <p>Solte os arquivos</p> }
       { 
         state === 'filled' && 
-        <div>
-          { file && <p>{file.name}</p> }
+        <div className="text-center text-sm font-bold">
+          { fileNamesToDisplay.map(fileName => <p key={fileName}>{fileName}</p>) }
+          { additionalFileCount > 0 && ` e mais ${additionalFileCount} arquivos` }
         </div>
       }
+      { state === 'empty' && <Folder className="w-8 h-8" strokeWidth={1} /> }
+      { state === 'dragging' && <FolderOpen className="w-8 h-8" strokeWidth={1} /> }
       <input
+        ref={ref}
         name='file'
         type="file"
+        multiple={multiple}
         onDragEnter={() => setState('dragging')}
-        onDragLeave={() => setState( file ? 'filled' : 'empty')}
-        onDrop={e => {
-          e.preventDefault();
-          setState('filled');
-          handleChangeFiles(e.dataTransfer.files);
-        }}
-        onChange={e => {
-          e.preventDefault();
-          if (e.target.files) {
-            setState('filled');
-            handleChangeFiles(e.target.files);
-          }
-        }}
-        onClick={(e) => {console.log('click')}}
-        className='w-full h-20 absolute cursor-pointer opacity-0'
+        onDragLeave={() => setState(props.value ? 'filled' : 'empty')}
+        onDrop={() =>  setState('filled')}
+        className='w-full h-full absolute cursor-pointer opacity-0'
+        accept={allowedExtensions?.join(',')}
+        {...props}
       />
     </label>
   );
-}
+});
+
+export default InputFile;

@@ -10,13 +10,13 @@ export type Plan = {
   name: string;
   price: number;
   description: string;
+  limits: PlanLimits;
 }
 export type PlanLimits = {
   maxUploadSize: number;
   maxStorageSize: number;
   maxEmails: number;
   canUseExpiresOnDownload: boolean;
-  canUseQuickDownload: boolean;
   canUsePassword: boolean;
   maxExpireDays: number;
   maxUploadConcurrency: number;

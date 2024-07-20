@@ -23,38 +23,53 @@ export default async function middleware(req: NextRequest) {
   if (req.nextUrl.pathname.startsWith("/_next")) {
     return NextResponse.next();
   }
+  
   console.log("start middleware");
+  
   const accessToken = cookies().get('accessToken')?.value;
   const expiresAt = cookies().get('expiresAt')?.value;
   const refreshToken = cookies().get('refreshToken')?.value;
 
-  if (!accessToken || !expiresAt || !refreshToken) {
+  // Redirecionar imediatamente se não houver tokens
+  if (!accessToken && !refreshToken) {
     console.log("redirect to login");
     return NextResponse.redirect(new URL('/auth/login', req.url));
   }
 
-  if (moment().isAfter(moment(expiresAt))) {
-    const userAuth = await handleRefreshToken(refreshToken);
-    cookies().set('accessToken', userAuth.accessToken, {
-      expires: new Date(userAuth.expires),
-      httpOnly: true,
-      sameSite: 'lax',
-      path: '/',
-    });
-    cookies().set('refreshToken', userAuth.refreshToken, {
-      httpOnly: true,
-      sameSite: 'lax',
-      path: '/',
-    });
-    cookies().set('expiresAt', moment(userAuth.expires).toISOString(), {
-      httpOnly: true,
-      sameSite: 'lax',
-      path: '/',
-    });
+  
+  if (
+    !accessToken && refreshToken || // Se não há accessToken mas há refreshToken, renovar o accessToken
+    refreshToken && expiresAt && moment().isAfter(moment(expiresAt)) // Se o accessToken expirou, renovar o accessToken
+  ) {
+    try {
+      const userAuth = await handleRefreshToken(refreshToken);
+      const response = NextResponse.next();
+      response.cookies.set('accessToken', userAuth.accessToken, {
+        httpOnly: true,
+        sameSite: 'lax',
+        path: '/',
+      });
+      response.cookies.set('refreshToken', userAuth.refreshToken, {
+        httpOnly: true,
+        sameSite: 'lax',
+        path: '/',
+      });
+      response.cookies.set('expiresAt', moment(userAuth.expires).toISOString(), {
+        httpOnly: true,
+        sameSite: 'lax',
+        path: '/',
+      });
+      return response;
+    } catch (error) {
+      console.error('Error refreshing token:', error);
+      return NextResponse.redirect(new URL('/auth/login', req.url));
+    }
   }
+
   return NextResponse.next();
 }
-// seleciona as rotas privadas
+
+// Seleciona as rotas privadas
 export const config = {
   matcher: [
     "/",

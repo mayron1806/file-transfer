@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import useSWR from "swr";
 
 type AuthRes = {
-  accessToken?: string;
+  accessToken: string;
   user?: User;
   error: Error | null;
   isLoading: boolean;
@@ -13,7 +13,7 @@ type AuthRes = {
 
 export const useAuth = (): AuthRes => {
   const { cookies } = useCookies();
-  const [accessToken, setAccessToken] = useState<string | undefined>(cookies['accessToken'] ?? undefined);
+  const [accessToken, setAccessToken] = useState<string>(cookies['accessToken']);
   
   useEffect(() => {
     setAccessToken(cookies['accessToken']);

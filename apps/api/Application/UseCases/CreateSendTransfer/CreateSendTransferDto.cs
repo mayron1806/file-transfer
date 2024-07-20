@@ -12,8 +12,8 @@ public class CreateSendTransferInputDto
     public DateTime? ExpiresAt { get; set; }
     public IEnumerable<FileUpload> Files { get; set; } = [];
     public string? Password { get; set; }
+    public string? Name { get; set; }
     public string? Message { get; set; }
-    public bool QuickDownload { get; set; }
     public bool ExpiresOnDownload { get; set; }
     public IEnumerable<string>? EmailsDestination { get; set; }
     public class FileUpload {
@@ -23,8 +23,8 @@ public class CreateSendTransferInputDto
         public long Size { get; set; }
     }
 }
-public class CreateSendTransferOutputDto(IEnumerable<string> urls, Transfer transfer)
+public class CreateSendTransferOutputDto(IEnumerable<string> urls, int transferId)
 {
     public IEnumerable<string> Urls { get; set; } = urls;
-    public Transfer Transfer { get; set; } = transfer;
+    public int TransferId { get; set; } = transferId;
 }

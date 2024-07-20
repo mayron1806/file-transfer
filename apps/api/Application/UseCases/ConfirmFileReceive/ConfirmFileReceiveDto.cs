@@ -2,7 +2,7 @@
 
 public class ConfirmFileReceiveInputDto
 {
-    public required string TransferKey { get; set; }
+    public int TransferId { get; set; }
 }
 public class ConfirmFileReceiveOutputDto
 {

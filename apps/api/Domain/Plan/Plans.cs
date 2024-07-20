@@ -10,8 +10,8 @@ public static class Plans
             maxUploadSize: 5e+9, // 5 GB
             maxStorageSize: 5e+9, // 5 GB
             maxEmails: 10, 
-            canUseExpiresOnDownload: false, 
-            canUseQuickDownload: false,
+            canUseExpiresOnDownload: true, 
+            canUseQuickDownload: true,
             canUsePassword: true,
             maxExpireDays: 7,
             maxUploadConcurrency: 500,

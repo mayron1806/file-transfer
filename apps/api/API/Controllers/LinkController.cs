@@ -174,9 +174,9 @@ public class LinkController(
             Password = body.Password
         }));
     }
-    [HttpPost("{transferKey}/receive-confirm")]
-    public async Task<IActionResult> ReceiveConfirm([FromRoute] string transferKey)
-    {  
-        return Ok(await _confirmFileReceive.Execute(new ConfirmFileReceiveInputDto{ TransferKey = transferKey }));
-    }
+    // [HttpPost("{transferKey}/receive-confirm")]
+    // public async Task<IActionResult> ReceiveConfirm([FromRoute] string transferKey)
+    // {  
+    //     return Ok(await _confirmFileReceive.Execute(new ConfirmFileReceiveInputDto{ TransferId = transferKey }));
+    // }
 }

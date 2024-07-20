@@ -6,7 +6,7 @@ public class ConfirmFileReceiveValidator: AbstractValidator<ConfirmFileReceiveIn
 {
     public ConfirmFileReceiveValidator()
     {
-        RuleForEach(x => x.TransferKey)
+        RuleFor(x => x.TransferId)
             .NotEmpty().WithMessage("Transferencia invalida");
     }
 }

@@ -6,8 +6,6 @@ using Infrastructure.Services.Storage;
 using Infrastructure.UnitOfWork;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using Org.BouncyCastle.Bcpg.Sig;
-using Visus.Cuid;
 
 namespace Application.UseCases.CreateSendTransfer;
 
@@ -65,7 +63,7 @@ public class CreateSendTransferUseCase(
         if (expiresAt > DateTime.UtcNow.AddDays(plan.Limits.MaxExpireDays)) {
             expiresAt = DateTime.UtcNow.AddDays(plan.Limits.MaxExpireDays);
         }
-        var transfer = new Transfer(organization.Id, expiresAt, TransferType.Send, filesSize);
+        var transfer = new Transfer(organization.Id, input.Name, expiresAt, TransferType.Send, filesSize);
         transfer.AddSend(new Send(
             message: input.Message,
             password: plan.Limits.CanUsePassword && !string.IsNullOrEmpty(input.Password) ? Security.HashPassword(input.Password) : null,
@@ -91,6 +89,6 @@ public class CreateSendTransferUseCase(
         await _unitOfWork.SaveChangesAsync();
         _logger.LogInformation(JsonConvert.SerializeObject(urls));
         // retorna urls dos arquivos
-        return new CreateSendTransferOutputDto(urls, transfer);
+        return new CreateSendTransferOutputDto(urls, transfer.Id);
     }
 }

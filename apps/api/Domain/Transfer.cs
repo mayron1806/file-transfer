@@ -4,7 +4,7 @@ namespace Domain;
 
 public class Transfer
 {
-    public Transfer(string key, int organizationId, DateTime expiresAt, long size, string path, TransferType transferType)
+    public Transfer(string? name, string key, int organizationId, DateTime expiresAt, long size, string path, TransferType transferType)
     {
         Key = key;
         OrganizationId = organizationId;
@@ -14,7 +14,7 @@ public class Transfer
         Path = path;
         TransferType = transferType;
     }
-    public Transfer(int organizationId, DateTime expiresAt, TransferType transferType, long? size = 0)
+    public Transfer(int organizationId, string? name, DateTime expiresAt, TransferType transferType, long? size = 0)
     {
         var key = new Cuid2(10).ToString();
         Key = key;
@@ -27,6 +27,7 @@ public class Transfer
     }
     public int Id { get; }
     public string Key { get; }
+    public string? Name { get; set; }
     public IEnumerable<File>? Files { get; private set; }
     public Organization? Organization { get; }
     public int OrganizationId { get; }

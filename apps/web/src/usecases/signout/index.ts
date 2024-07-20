@@ -9,4 +9,4 @@ export const signOut = async () => {
     throw new Error(data.error);
   }
   redirect('/auth/login');
-} 
+};

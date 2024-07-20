@@ -5,7 +5,6 @@ import { createContext, useContext, useState } from "react";
 
 type OrganizationContextProps = {
   organization: Organization;
-  setOrganization: (organization: Organization) => void;
 }  
 const OrganizationContext = createContext<OrganizationContextProps>({} as OrganizationContextProps);
 type Props = {
@@ -13,9 +12,9 @@ type Props = {
   organization: Organization;
 }
 const OrganizationProvider = ({ children, organization }: Props) => {
-  const [org, setOrg] = useState(organization);
+  const [org] = useState(organization);
   return (
-    <OrganizationContext.Provider value={{ organization: org, setOrganization: setOrg }}>
+    <OrganizationContext.Provider value={{ organization: org }}>
       {children}
     </OrganizationContext.Provider>
   );

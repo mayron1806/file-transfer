@@ -9,6 +9,7 @@ namespace Application.UseCases.CreateReceiveTransfer;
 public class CreateReceiveTransferInputDto
 {
     public int UserId { get; set; }
+    public string? Name { get; set; }
     public int OrganizationId { get; set; }
     public DateTime? ExpiresAt { get; set; }
     public string? Password { get; set; }

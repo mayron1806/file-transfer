@@ -3,11 +3,12 @@ import Sidebar from "@/components/sidebar";
 import OrganizationProvider from "@/context/organization-context";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import Error from "@/components/error";
-import { getOrganization } from "@/services/organization";
-import { signOut } from "@/services/auth";
+import ErrorScreen from "@/components/error";
 import { Organization } from "@/types/api/organization";
 import { env } from "@/env";
+import { signOut } from "@/usecases/signout";
+import { HttpError } from "@/errors/HttpError";
+import { getOrganization } from "@/usecases/get-organization";
 
 type Props = {
   children: React.ReactNode;
@@ -28,16 +29,33 @@ const AppLayout = async ({ children, params }: Props) => {
     });
     const data = await res.json();
     if (!res.ok) {
-      return <Error error={data.error} goBackAction={signOut} />
+      return <ErrorScreen error={data.error} goBackAction={signOut} />
     }
     const { id } = data as Organization;
     redirect(`/dashboard/${id}`);
   }
-  const organization = await getOrganization(params.organizationId, accessToken);
-  if (!organization.success) return <Error error={organization.error} goBackAction={handleNavigateToDashboard}  goBackActionLabel="Ir para o meu painel" />
+  let organization: Organization;
+  try {
+    organization = await getOrganization(params.organizationId, accessToken);
+  } catch (error) {
+    if (error instanceof HttpError) {
+      return <ErrorScreen error={{ message: error.message, status: error.status }} goBackAction={handleNavigateToDashboard}  goBackActionLabel="Ir para o meu painel" />
+    }
+    if (error instanceof Error) {
+      return <ErrorScreen error={{ message: error.message, status: 400 }} goBackAction={handleNavigateToDashboard}  goBackActionLabel="Ir para o meu painel" />
+    }
+    return (
+      <ErrorScreen 
+        error={{
+          message: "Ocorreu um erro ao buscar seus dados, faça login novamente para continuar", status: 400
+        }} 
+        goBackAction={signOut} 
+      />
+    );
+  }
 
   return (
-    <OrganizationProvider organization={organization.data}>
+    <OrganizationProvider organization={organization!}>
       <div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
         <Sidebar organizationId={params.organizationId} />
         <div className="flex flex-col">

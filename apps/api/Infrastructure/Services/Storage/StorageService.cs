@@ -81,7 +81,7 @@ public class StorageService : IStorageService
             Key = key,
             ContentType = contentType,
             Verb = HttpVerb.PUT,
-            Expires = DateTime.UtcNow.AddMinutes(1),
+            Expires = DateTime.UtcNow.AddHours(1),
         };
         return Task.FromResult(_s3Client.GetPreSignedURL(request));
     }

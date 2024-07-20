@@ -18,9 +18,7 @@ public class ConfirmFileReceiveUseCase(
 
     public override async Task<ConfirmFileReceiveOutputDto> Execute(ConfirmFileReceiveInputDto input)
     {
-        var transfer = await _unitOfWork.Transfer.GetFirstAsync(x => x.Key == input.TransferKey);
-        if (transfer == null) throw new HttpException(400, "Transferencia invalida");
-        var count = await _unitOfWork.File.CountByTransferAsync(transfer.Id);
+        var count = await _unitOfWork.File.CountByTransferAsync(input.TransferId);
         if(count == 0) throw new HttpException(400, "Nenhum arquivo enviado");
         List<FileErrorDto> errors = [];
         using (var transaction = await _unitOfWork.BeginTransactionAsync())
@@ -29,8 +27,8 @@ public class ConfirmFileReceiveUseCase(
             {
                 for (int i = 0; i < count; i += FILE_READ_BATCH_SIZE) {
 
-                    var files = await _unitOfWork.File.GetByTransferAsync(transfer.Id, FILE_READ_BATCH_SIZE, i);
-                    _logger.LogInformation("Transferencia: " + transfer.Id.ToString());
+                    var files = await _unitOfWork.File.GetByTransferAsync(input.TransferId, FILE_READ_BATCH_SIZE, i);
+                    _logger.LogInformation("Transferencia: " + input.TransferId.ToString());
                     _logger.LogInformation("Lendo arquivos: " + i + " - " + (i + FILE_READ_BATCH_SIZE).ToString());
                     _logger.LogInformation("Arquivos: " + files.Count().ToString());
                     var validations = files.Select(ValidateFile).ToList();

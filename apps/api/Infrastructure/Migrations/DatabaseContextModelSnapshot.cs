@@ -215,6 +215,10 @@ namespace Infrastructure.Migrations
                         .HasMaxLength(24)
                         .HasColumnType("character varying(24)");
 
+                    b.Property<string>("Name")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
                     b.Property<int>("OrganizationId")
                         .HasColumnType("integer");
 

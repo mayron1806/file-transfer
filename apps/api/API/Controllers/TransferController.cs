@@ -1,4 +1,5 @@
 using API.Dto;
+using Application.Exceptions;
 using Application.UseCases.ConfirmFileReceive;
 using Application.UseCases.CreateSendTransfer;
 using Domain;
@@ -57,7 +58,7 @@ public class TransferController(
     public async Task<ActionResult<CreateSendTransferInputDto>> CreateTransfer([FromBody] CreateSendTransferInputDto body, [FromQuery] string? type = null)
     {
         var organizationId = GetOrganizationId();
-        return Ok(await _CreateSendTransfer.Execute(new() { 
+        var result = await _CreateSendTransfer.Execute(new() { 
             OrganizationId = organizationId,
             Files = body.Files,
             EmailsDestination = body.EmailsDestination,
@@ -65,8 +66,8 @@ public class TransferController(
             ExpiresOnDownload = body.ExpiresOnDownload,
             Message = body.Message,
             Password = body.Password,
-            QuickDownload = body.QuickDownload
-        }));
+        });
+        return Ok(result);
     }
     [HttpPost("confirm-receive")]
     public async Task<IActionResult> ConfirmReceive([FromBody] ConfirmFileReceiveInputDto body) => Ok(await _confirmFileReceive.Execute(body));

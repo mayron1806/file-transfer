@@ -1,4 +1,4 @@
-import NewSendFilesDialog from "@/components/dialogs/new-send-files";
+import NewSendFilesDialog from "@/components/dialogs/new-send-files-transfer";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 const HomePage = () => {
@@ -15,7 +15,6 @@ const HomePage = () => {
         <NewSendFilesDialog />
       </CardHeader>
       <CardContent>
-
       </CardContent>
     </Card>
   );

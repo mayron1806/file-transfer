@@ -2,7 +2,7 @@ namespace Application.Utils;
 
 public static class FileUtilities
 {
-        private static readonly HashSet<string> AllowedExtensions = new HashSet<string>
+    private static readonly HashSet<string> AllowedExtensions = new HashSet<string>
     {
         // Imagens
         ".jpg", ".jpeg", ".png", ".gif", ".svg", ".bmp", ".webp", ".tiff", ".ico",

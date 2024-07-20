@@ -11,6 +11,7 @@ import { CreateAccountSchema, createAccountSchema } from "@/validation/create-ac
 import Link from "next/link";
 import { useToast } from "@/components/ui/use-toast";
 import ErrorMessage from "@/components/error-message";
+import { createAccount } from "@/usecases/create-account";
 
 const CreateAccount = () => {
   const { toast } = useToast();
@@ -21,27 +22,21 @@ const CreateAccount = () => {
   console.log(errors);
   
   const submit = handleSubmit(async (data) => {
-    const res = await fetch(`/api/user/create-account`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(data)
-    });
-    if (res.ok) {
+    try {
+      await createAccount(data);
       toast({
         title: 'Conta criada',
         description: 'Conta criada com sucesso, confirme seu email para ativar sua conta',
         duration: 1000 * 60 // 1 min
       });
-    }
-    if (!res.ok) {
-      const error = await res.json();
-      toast({
-        title: 'Erro ao criar conta',
-        description: error.error,
-        variant: 'destructive',
-      });
+    } catch (error) {
+      if (error instanceof Error) {
+        toast({
+          title: 'Erro ao criar conta',
+          description: error.message,
+          variant: 'destructive',
+        });
+      }
     }
   });
   return ( 

@@ -24,6 +24,10 @@ public class TransferConfiguration : IEntityTypeConfiguration<Transfer>
             .HasMaxLength(24);
 
         builder
+            .Property(x => x.Name)
+            .HasMaxLength(100);
+
+        builder
             .HasIndex(x => x.Key)
             .IsUnique(true);
 

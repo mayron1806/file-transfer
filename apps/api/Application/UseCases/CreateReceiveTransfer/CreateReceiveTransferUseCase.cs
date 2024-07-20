@@ -42,7 +42,8 @@ public class CreateReceiveTransferUseCase(
         var transfer = new Transfer(
             organizationId: input.OrganizationId,
             transferType: TransferType.Receive,
-            expiresAt: expiresAt
+            expiresAt: expiresAt,
+            name: input.Name
         );
         transfer.AddReceive(new Receive(
             message: input.Message,
