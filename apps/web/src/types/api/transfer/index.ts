@@ -1,5 +1,8 @@
 import { File } from "../file";
 import { Organization } from "../organization";
+export type GetTransfers = {
+  transfers: SimpleTransfer[];
+}
 
 export type Transfer = {
   id: number;
@@ -18,5 +21,22 @@ export type Transfer = {
   expiresOnDownload: boolean;
   expiresOnDownloadCount: number;
   expiresOnDownloadSize: number;
-
+}
+export type SimpleTransfer = {
+  id: number;
+  key: string;
+  name: string;
+  createdAt: Date;
+  expiresAt: Date;
+  size: number;
+  filesCount: number;
+  type: "send" | "receive";
+  send?: {
+    hasPassword: boolean;
+    downloads: number;
+    expiresOnDownload: boolean;
+  };
+  receive?: {
+    hasPassword: boolean;
+  }
 }

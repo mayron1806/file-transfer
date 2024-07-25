@@ -3,6 +3,7 @@ import { UserAuth } from "./types/api/user";
 import { env } from "./env";
 import { cookies } from "next/headers";
 import moment from "moment";
+import { isJwtValid } from "./lib/is-jwt-valid";
 
 const handleRefreshToken = async (refreshToken: string): Promise<UserAuth> => {
   const req = await fetch(`${env.API_URL}/user/refresh-token`, {
@@ -12,10 +13,11 @@ const handleRefreshToken = async (refreshToken: string): Promise<UserAuth> => {
     method: "POST",
     body: JSON.stringify({ refreshToken }),
   });
-  const res = await req.json();
   if (!req.ok) {
+    const res = await req.json();
     throw new Error(res.error);
   }
+  const res = await req.json();
   return res as UserAuth;
 }
 
@@ -35,12 +37,12 @@ export default async function middleware(req: NextRequest) {
     console.log("redirect to login");
     return NextResponse.redirect(new URL('/auth/login', req.url));
   }
-
-  
   if (
-    !accessToken && refreshToken || // Se não há accessToken mas há refreshToken, renovar o accessToken
-    refreshToken && expiresAt && moment().isAfter(moment(expiresAt)) // Se o accessToken expirou, renovar o accessToken
+    (refreshToken && accessToken && !await isJwtValid(accessToken)) || // accessToken invalido ou expirado
+    (!accessToken && refreshToken) || // Se não há accessToken mas há refreshToken
+    (refreshToken && expiresAt && moment().isAfter(moment(expiresAt))) // Se o accessToken expirou
   ) {
+    console.log("refresh token");
     try {
       const userAuth = await handleRefreshToken(refreshToken);
       const response = NextResponse.next();
@@ -59,6 +61,8 @@ export default async function middleware(req: NextRequest) {
         sameSite: 'lax',
         path: '/',
       });
+      console.log('refreshed token');
+      
       return response;
     } catch (error) {
       console.error('Error refreshing token:', error);

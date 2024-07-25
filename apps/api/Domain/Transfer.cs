@@ -7,6 +7,7 @@ public class Transfer
     public Transfer(string? name, string key, int organizationId, DateTime expiresAt, long size, string path, TransferType transferType)
     {
         Key = key;
+        Name = name;
         OrganizationId = organizationId;
         ExpiresAt = expiresAt;
         CreatedAt = DateTime.UtcNow;
@@ -18,6 +19,7 @@ public class Transfer
     {
         var key = new Cuid2(10).ToString();
         Key = key;
+        Name = name;
         OrganizationId = organizationId;
         ExpiresAt = expiresAt;
         CreatedAt = DateTime.UtcNow;

@@ -16,4 +16,5 @@ public interface IRepository<T, K> where T : class
         string? includeProperties = null,
         int? limit = null,
         int? offset = null);
+    Task<int> CountAsync(Expression<Func<T, bool>>? filter = null);
 }

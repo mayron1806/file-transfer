@@ -94,4 +94,15 @@ public abstract class Repository<TEntity, Key> : IRepository<TEntity, Key> where
             return await query.ToListAsync();
         }
     }
+
+    public async Task<int> CountAsync(Expression<Func<TEntity, bool>>? filter = null)
+    {
+        IQueryable<TEntity> query = _dbSet;
+        if (filter != null)
+        {
+            query = query.Where(filter);
+        }
+        return await query.CountAsync();
+
+    }
 }

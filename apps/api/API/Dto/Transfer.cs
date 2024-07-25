@@ -1,60 +1,67 @@
 using Domain;
 
 namespace API.Dto;
-public class SimpleTransfer(int id, string key, DateTime expiresAt, long size, int filesCount, TransferType transferType, SimpleTransfer.TransferReceiveDto receive, SimpleTransfer.TransferSendDto send)
+public class SimpleTransfer(int id, string key, string name, DateTime createdAt, DateTime expiresAt, long size, int filesCount, TransferType transferType, SimpleTransfer.TransferReceiveDto? receive, SimpleTransfer.TransferSendDto? send)
 {
     public int Id { get; private set; } = id;
     public string Key { get; private set; } = key;
+    public string Name { get; private set; } = name;
     public DateTime ExpiresAt { get; private set; } = expiresAt;
+    public DateTime CreatedAt { get; private set; } = createdAt;
     public long Size { get; private set; } = size;
     public int FilesCount { get; private set; } = filesCount;
     public TransferType TransferType { get; private set; } = transferType;
-    public TransferReceiveDto Receive { get; private set; } = receive;
-    public TransferSendDto Send { get; private set; } = send;
+    public TransferReceiveDto? Receive { get; private set; } = receive;
+    public TransferSendDto? Send { get; private set; } = send;
 
     public class TransferReceiveDto(bool hasPassword)
     {
         public bool HasPassword { get; private set; } = hasPassword;
     }
-    public class TransferSendDto(bool hasPassword, int downloads, bool expiresOnDowload)
+    public class TransferSendDto(bool hasPassword, int downloads, bool expiresOnDownload)
     {
         public bool HasPassword { get; private set; } = hasPassword;
         public int Downloads { get; private set; } = downloads;
-        public bool ExpiresOnDowload { get; private set; } = expiresOnDowload;
+        public bool ExpiresOnDownload { get; private set; } = expiresOnDownload;
     }
 }
 public class TransferGetTransferListDto 
 {
     public IEnumerable<SimpleTransfer> Transfers { get; private set; } = [];
+    public int TransfersCount { get; set; }
     
-    public static TransferGetTransferListDto Map(IEnumerable<Transfer> transfers)
+    public static TransferGetTransferListDto Map(IEnumerable<Transfer> transfers, int transfersCount)
     {
         var res = new TransferGetTransferListDto
         {
+            TransfersCount = transfersCount,
             Transfers = transfers.Select(x => new SimpleTransfer(
             id: x.Id,
             key: x.Key,
+            name: x.Name ?? x.Key,
+            createdAt: x.CreatedAt,
             expiresAt: x.ExpiresAt,
             size: x.Size,
             filesCount: x.FilesCount,
             transferType: x.TransferType,
-            receive: new SimpleTransfer.TransferReceiveDto(
-                hasPassword: x.TransferType == TransferType.Receive && !string.IsNullOrEmpty(x.Receive!.Password)
-            ),
-            send: new SimpleTransfer.TransferSendDto(
-                hasPassword: x.TransferType == TransferType.Send && !string.IsNullOrEmpty(x.Send!.Password),
+            receive: x.TransferType == TransferType.Receive ? new SimpleTransfer.TransferReceiveDto(
+                hasPassword: !string.IsNullOrEmpty(x.Receive!.Password)
+            ) : null,
+            send: x.TransferType == TransferType.Send ?  new SimpleTransfer.TransferSendDto(
+                hasPassword: !string.IsNullOrEmpty(x.Send!.Password),
                 downloads: x.Send!.Downloads,
-                expiresOnDowload: x.Send!.ExpiresOnDowload
-            )
+                expiresOnDownload: x.Send!.ExpiresOnDowload
+            ) : null
         ))
         };
         return res;
     }
 }
-public class TransferGetTrasferDto(int id, string key, IEnumerable<TransferGetTrasferDto.TransferFileDto>? files, DateTime createdAt, DateTime expiresAt, long size, int filesCount, string path, TransferType transferType, TransferGetTrasferDto.TransferReceiveDto receive, TransferGetTrasferDto.TransferSendDto send)
+public class TransferGetTrasferDto(int id, string key, string? name, IEnumerable<TransferGetTrasferDto.TransferFileDto>? files, DateTime createdAt, DateTime expiresAt, long size, int filesCount, string path, TransferType transferType, TransferGetTrasferDto.TransferReceiveDto receive, TransferGetTrasferDto.TransferSendDto send)
 {
     public int Id { get; private set; } = id;
     public string Key { get; private set; } = key;
+    public string? Name { get; private set; } = name;
     public IEnumerable<TransferFileDto>? Files { get; private set; } = files;
     public DateTime CreatedAt { get; private set; } = createdAt;
     public DateTime ExpiresAt { get; private set; } = expiresAt;
@@ -97,6 +104,7 @@ public class TransferGetTrasferDto(int id, string key, IEnumerable<TransferGetTr
         (
             id: transfer.Id,
             key: transfer.Key,
+            name: transfer.Name,
             files: transfer.Files?.Select(x => new TransferFileDto
             (
                 id: x.Id,

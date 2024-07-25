@@ -2,6 +2,7 @@
 import { ThemeProvider } from "./theme-provider";
 import { Toaster } from "@/components/ui/toaster";
 import CacheProvider from "@/context/cache-context";
+import QueryProvider from "@/context/query";
 const Providers = ({ children }: {children: React.ReactNode}) => {
   return ( 
     <ThemeProvider
@@ -10,9 +11,11 @@ const Providers = ({ children }: {children: React.ReactNode}) => {
       enableSystem
       disableTransitionOnChange
     >
-      <CacheProvider>
-          {children}
-      </CacheProvider>
+      <QueryProvider>
+        <CacheProvider>
+            {children}
+        </CacheProvider>
+      </QueryProvider>
       <Toaster />
     </ThemeProvider>
   );

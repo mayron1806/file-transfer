@@ -42,7 +42,9 @@ const Error = ({ error, goBackAction, goBackActionLabel }: Props) => {
       <p className="text-lg">{error.message}</p>
       {
         goBackAction && (
-          <Button onClick={action}>{goBackActionLabel ? goBackActionLabel : 'Voltar' }</Button>
+          <form action={action}>
+            <Button>{goBackActionLabel ? goBackActionLabel : 'Voltar' }</Button>
+          </form>
         )
       }
     </div>

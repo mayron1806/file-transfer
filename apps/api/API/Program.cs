@@ -92,6 +92,16 @@ builder.Services.AddAuthentication(x => {
         ValidateAudience = false,
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(jwt.Key)),
     };
+    x.Events = new JwtBearerEvents
+    {
+        OnChallenge = async context =>
+        {
+            context.HandleResponse();
+            context.Response.StatusCode = 401;
+            context.Response.Headers.Append("Token-Expired", "true");
+            await context.Response.WriteAsJsonAsync(new { error = "Não autorizado" });
+        }
+    };
 });
 builder.Services.AddAuthorization();
 

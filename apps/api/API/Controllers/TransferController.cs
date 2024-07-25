@@ -1,5 +1,4 @@
 using API.Dto;
-using Application.Exceptions;
 using Application.UseCases.ConfirmFileReceive;
 using Application.UseCases.CreateSendTransfer;
 using Domain;
@@ -24,26 +23,29 @@ public class TransferController(
     private readonly IConfirmFileReceive _confirmFileReceive = confirmFileReceive;
 
     [HttpGet]
-    public async Task<IActionResult> GetTransferList([FromQuery] int limit = 20, [FromQuery] int offset = 0, [FromQuery] string? type = null)
+    public async Task<IActionResult> GetTransferList([FromQuery] int limit = 20, [FromQuery] int page = 0, [FromQuery] string? type = null)
     {
         var organizationId = GetOrganizationId();
         List<Transfer> transferList = [];
+        int count = 0;
         if (type == "send") {
             transferList = await _unitOfWork.Transfer.GetListAsync(
                 x => x.OrganizationId == organizationId && x.TransferType == TransferType.Send, 
                 limit: limit, 
-                offset: offset
+                offset: page * limit
             );
-        }
+            count = await _unitOfWork.Transfer.CountAsync(x => x.OrganizationId == organizationId && x.TransferType == TransferType.Send);
+        }   
         else if (type == "receive") {
             transferList = await _unitOfWork.Transfer.GetListAsync(
                 x => x.OrganizationId == organizationId && x.TransferType == TransferType.Receive, 
                 limit: limit, 
-                offset: offset
+                offset: page * limit
             );
+            count = await _unitOfWork.Transfer.CountAsync(x => x.OrganizationId == organizationId && x.TransferType == TransferType.Receive);
         }
         else return BadRequest();
-        return Ok(TransferGetTransferListDto.Map(transferList));
+        return Ok(TransferGetTransferListDto.Map(transferList, count));
     }
 
     [HttpGet("{transferKey}")]

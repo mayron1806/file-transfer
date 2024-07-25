@@ -1,8 +1,8 @@
 import NewSendFilesDialog from "@/components/dialogs/new-send-files-transfer";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import SendFilesTable from "./components/send-files-table";
 
 const HomePage = () => {
-  // get files
   return ( 
     <Card x-chunk="dashboard-06-chunk-0">
       <CardHeader className="flex flex-row justify-between">
@@ -15,6 +15,7 @@ const HomePage = () => {
         <NewSendFilesDialog />
       </CardHeader>
       <CardContent>
+        <SendFilesTable />
       </CardContent>
     </Card>
   );
