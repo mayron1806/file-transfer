@@ -1,6 +1,4 @@
-﻿using Domain;
-
-namespace Application.UseCases.CreateSendTransfer;
+﻿namespace Application.UseCases.CreateSendTransfer;
 
 // lista de arquivos para fazer upload
 // Name

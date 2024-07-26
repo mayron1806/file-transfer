@@ -18,4 +18,7 @@ public class CreateReceiveTransferInputDto
     public int? MaxFiles { get; set; }
     public IEnumerable<string>? AcceptedFiles { get; set; }
 }
-public class CreateReceiveTransferOutputDto {}
+public class CreateReceiveTransferOutputDto(string transferKey)
+{
+    public string TransferKey { get; set; } = transferKey;
+}

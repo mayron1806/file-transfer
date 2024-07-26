@@ -1,19 +1,26 @@
-export const allowedFiles = [
-  // Imagens
+export const allowedImages = [
   ".jpg", ".jpeg", ".png", ".gif", ".svg", ".bmp", ".webp", ".tiff", ".ico",
-  
-  // Documentos
+]
+export const allowedDocuments = [
   ".pdf", ".doc", ".docx", ".xls", ".xlsx", ".txt", ".odt", ".ods", ".odp", ".rtf", ".md",
-  
-  // Áudio
+]
+export const allowedAudio = [
   ".mp3", ".wav", ".ogg", ".flac", ".aac", ".m4a",
-  
-  // Vídeo
+]
+export const allowedVideo = [
   ".mp4", ".mov", ".avi", ".mkv", ".flv", ".wmv", ".webm",
-  
-  // Arquivos compactados
+];
+export const allowedCompressedFiles = [
   ".zip", ".gz", ".rar", ".tar", ".7z", ".bz2", ".xz",
-  
-  // Outros
+]
+export const allowedOthers = [
   ".csv", ".xml", ".json"
+]
+export const allowedFiles = [
+  ...allowedImages,
+  ...allowedDocuments,
+  ...allowedAudio,
+  ...allowedVideo,
+  ...allowedCompressedFiles,
+  ...allowedOthers
 ]

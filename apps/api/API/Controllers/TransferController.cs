@@ -1,5 +1,6 @@
 using API.Dto;
 using Application.UseCases.ConfirmFileReceive;
+using Application.UseCases.CreateReceiveTransfer;
 using Application.UseCases.CreateSendTransfer;
 using Domain;
 using Infrastructure.UnitOfWork;
@@ -12,14 +13,16 @@ namespace API.Controllers;
 [Route("api/organization/{organizationId}/[controller]")]
 [Authorize]
 public class TransferController(
-    ICreateSendTransfer createSendTransfer, 
+    ICreateSendTransfer createSendTransfer,
+    ICreateReceiveTransfer createReceiveTransfer, 
     IConfirmFileReceive confirmFileReceive, 
     ILogger<TransferController> logger, 
     IUnitOfWork unitOfWork
     ) : BaseController(logger)
 {
     private readonly IUnitOfWork _unitOfWork = unitOfWork;
-    private readonly ICreateSendTransfer _CreateSendTransfer = createSendTransfer;
+    private readonly ICreateSendTransfer _createSendTransfer = createSendTransfer;
+    private readonly ICreateReceiveTransfer _createReceiveTransfer = createReceiveTransfer;
     private readonly IConfirmFileReceive _confirmFileReceive = confirmFileReceive;
 
     [HttpGet]
@@ -56,11 +59,27 @@ public class TransferController(
         return Ok(TransferGetTrasferDto.Map(transfer));
     }
 
-    [HttpPost]
-    public async Task<ActionResult<CreateSendTransferInputDto>> CreateTransfer([FromBody] CreateSendTransferInputDto body, [FromQuery] string? type = null)
+    [HttpPost("receive")]
+    public async Task<ActionResult<CreateReceiveTransferOutputDto>> CreateReceiveTransfer([FromBody] CreateReceiveTransferInputDto body, [FromQuery] string? type = null)
+    {
+        var result = await _createReceiveTransfer.Execute(new() { 
+            OrganizationId = GetOrganizationId(),
+            AcceptedFiles = body.AcceptedFiles,
+            ExpiresAt = body.ExpiresAt,
+            MaxFiles = body.MaxFiles,
+            MaxSize = body.MaxSize,
+            Name = body.Name,
+            UserId = GetUserId(),
+            Message = body.Message,
+            Password = body.Password,
+        });
+        return Ok(result);
+    }
+    [HttpPost("send")]
+    public async Task<ActionResult<CreateSendTransferOutputDto>> CreateSendTransfer([FromBody] CreateSendTransferInputDto body, [FromQuery] string? type = null)
     {
         var organizationId = GetOrganizationId();
-        var result = await _CreateSendTransfer.Execute(new() { 
+        var result = await _createSendTransfer.Execute(new() { 
             OrganizationId = organizationId,
             Files = body.Files,
             EmailsDestination = body.EmailsDestination,

@@ -5,6 +5,7 @@ import {
   flexRender,
   getCoreRowModel,
   PaginationState,
+  RowSelectionState,
   Updater,
   useReactTable,
 } from "@tanstack/react-table";
@@ -18,7 +19,7 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import {
   Select,
   SelectContent,
@@ -30,21 +31,25 @@ import {
 } from "@/components/ui/select";
 import { TableDataLoader } from "./types";
 import { Pagination } from "@/types/pagination";
-
-interface TransferDataTableProps<TData,TValue> {
+import { Trash2Icon } from "lucide-react";
+type T = object & {
+  id: string | number;
+}
+interface TransferDataTableProps<TData extends T, TValue> {
   columns: ColumnDef<TData, TValue>[];
   dataLoader: () => Promise<TableDataLoader<TData>>;
   pagination: Pagination;
   type: string;
   setPagination: (p: Pagination) => void;
 }
-export function TransferDataTable<TData, TValue>({
+export function TransferDataTable<TData extends T, TValue>({
   columns,
   dataLoader,
   pagination,
   type,
   setPagination,
 }: TransferDataTableProps<TData, TValue>) {
+  const [rowSelection, setRowSelection] = useState<RowSelectionState>({}) 
   const paginationState = {
     pageIndex: pagination.page,
     pageSize: pagination.limit,
@@ -69,7 +74,11 @@ export function TransferDataTable<TData, TValue>({
     rowCount: dataQuery.data?.rowsCount,
     state: {
       pagination: paginationState,
+      rowSelection,
     },
+    onRowSelectionChange: setRowSelection,
+    enableRowSelection: true,
+    getRowId: (row) => row.id.toString(),
     onPaginationChange,
     getCoreRowModel: getCoreRowModel(),
     manualFiltering: true,
@@ -78,6 +87,19 @@ export function TransferDataTable<TData, TValue>({
 
   return (
     <>
+      {
+        table.getRowModel().rows.filter(row => row.getIsSelected()).length > 0 && (
+          <div className="flex justify-between items-center gap-2 mb-2">
+            <p>Selecionados: {table.getRowModel().rows.filter(row => row.getIsSelected()).length} de {table.getPreFilteredRowModel().rows.length}</p>
+            <div className="flex gap-2">
+              <Button variant="destructive" size="sm">
+                <Trash2Icon  className="w-4 h-4 mr-2"/>
+                Excluir selecionados
+              </Button>
+            </div>
+          </div>
+        )
+      }
       <Table>
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
@@ -102,6 +124,8 @@ export function TransferDataTable<TData, TValue>({
             table.getRowModel().rows.map((row) => (
               <TableRow
                 key={row.id}
+                onClick={row.getToggleSelectedHandler()}
+                className={row.getIsSelected() ? 'selected' : ''}
                 data-state={row.getIsSelected() && "selected"}
               >
                 {row.getVisibleCells().map((cell) => (

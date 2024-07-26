@@ -34,7 +34,7 @@ public class CreateReceiveTransferUseCase(
         if (maxFiles > plan.Limits.MaxUploadConcurrency) maxFiles = plan.Limits.MaxUploadConcurrency;
 
         if (input.AcceptedFiles != null && input.AcceptedFiles.Count() > 0) {
-            var allIsValid = input.AcceptedFiles.All(FileUtilities.IsAllowedMimeType);
+            var allIsValid = input.AcceptedFiles.All(FileUtilities.IsAllowedExtension);
             if (!allIsValid) throw new HttpException(400, "Ocorreu um erro ao criar link de recebimento, nem todos os tipos de arquivos selecionados sao permitidos");
         }
         #endregion
@@ -52,7 +52,12 @@ public class CreateReceiveTransferUseCase(
             acceptedFiles: input.AcceptedFiles,
             maxFiles: maxFiles
         ));
-        
-        return new CreateReceiveTransferOutputDto();
+        // atualiza organização
+        organization.AddTransfer(transfer);
+        _unitOfWork.Organization.Update(organization);
+        // salva transferencia
+        _unitOfWork.Transfer.Add(transfer);
+        await _unitOfWork.SaveChangesAsync();
+        return new CreateReceiveTransferOutputDto(transfer.Key);
     }
 }

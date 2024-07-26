@@ -38,7 +38,7 @@ public class TransferGetTransferListDto
             Transfers = transfers.Select(x => new SimpleTransfer(
             id: x.Id,
             key: x.Key,
-            name: x.Name ?? x.Key,
+            name: string.IsNullOrEmpty(x.Name) ? x.Key : x.Name,
             createdAt: x.CreatedAt,
             expiresAt: x.ExpiresAt,
             size: x.Size,

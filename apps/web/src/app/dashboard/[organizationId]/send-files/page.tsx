@@ -2,7 +2,7 @@ import NewSendFilesDialog from "@/components/dialogs/new-send-files-transfer";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import SendFilesTable from "./components/send-files-table";
 
-const HomePage = () => {
+const SendFilesPage = () => {
   return ( 
     <Card x-chunk="dashboard-06-chunk-0">
       <CardHeader className="flex flex-row justify-between">
@@ -21,4 +21,4 @@ const HomePage = () => {
   );
 }
  
-export default HomePage;
+export default SendFilesPage;

@@ -10,7 +10,7 @@ import { useState } from "react";
 import { useToast } from "../../ui/use-toast";
 import { useAuth } from "@/hooks/use-auth";
 import { Semaphore } from "@/lib/semaphore";
-import { prepareSendFilesTransfer } from "@/usecases/create-send-transfer";
+import { prepareSendFilesTransfer } from "@/usecases/prepare-send-files-transfer";
 import { HttpError } from "@/errors/HttpError";
 import SendFilesForm from "./form";
 import SendingFiles, { UploadProgress } from "./sending";

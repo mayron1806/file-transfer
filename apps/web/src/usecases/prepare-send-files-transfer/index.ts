@@ -14,7 +14,7 @@ type PrepareSendFilesTransferResponse = {
   transferId: number;
 }
 export const prepareSendFilesTransfer = async (accessToken: string, organizationId: number, body: PrepareSendFilesTransferBody) => {
-  const res = await fetch(`/api/organization/${organizationId}/transfer`, {
+  const res = await fetch(`/api/organization/${organizationId}/transfer/send`, {
     method: "POST",
     headers: {
       "Authorization": `Bearer ${accessToken}`,
